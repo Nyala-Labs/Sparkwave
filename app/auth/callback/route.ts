@@ -66,7 +66,7 @@ export async function GET(request: Request) {
       : `${origin}${next}`;
 
   const res = NextResponse.redirect(redirectUrl);
-  
+
   // Set provider tokens as custom cookie (if available)
   if (sessionData.session.provider_token) {
     res.cookies.set({
