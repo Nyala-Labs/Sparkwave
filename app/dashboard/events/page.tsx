@@ -1,111 +1,35 @@
-"use client";
 import Dialog from "@/components/Dialog";
 import Header from "@/components/Header";
-import { CreateEventAction } from "@/data/actions/events/CreateEventAction";
-import { newEventSchema } from "@/libs/schema/event.schema";
-import { useServerAction } from "@orpc/react/hooks";
-import z from "zod";
+import NewEventForm from "@/components/Event/NewEventForm";
+import AllEvents from "@/components/Event/AllEvents";
+import { Suspense } from "react";
 
 export default function EventsPage() {
-  const { execute, status } = useServerAction(CreateEventAction);
-  const action = async (form: FormData) => {
-    const input = Object.fromEntries(form.entries());
-    const parsed = newEventSchema.safeParse(input);
-    if (!parsed.success) {
-      console.error("Validation error:", parsed.error);
-      return;
-    }
-    execute(parsed.data);
-  };
-
   return (
-    <div className="flex flex-row items-center justify-between">
-      <Header>Events</Header>
-      <Dialog btnTitle="New Event" submitTitle="Create">
-        <form
-          action={action}
-          className="card bg-base-100 shadow-xl p-6 max-w-2xl mx-auto space-y-6"
-        >
-          <div>
-            <h2 className="text-2xl font-bold">New Event</h2>
-            <p className="text-sm text-base-content/60">
-              Fill out the details below to create a new event.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {Object.entries(newEventSchema.shape).map(([key, field]) => {
-              const label = key.charAt(0).toUpperCase() + key.slice(1);
-
-              return (
-                <div key={key} className="form-control w-full">
-                  <label htmlFor={key} className="label mb-2">
-                    <span className="label-text font-medium text-white">
-                      {label}
-                    </span>
-                  </label>
-
-                  {field instanceof z.ZodString ? (
-                    <input
-                      id={key}
-                      name={key}
-                      type="text"
-                      placeholder={`Enter ${label.toLowerCase()}`}
-                      className="input input-secondary w-full "
-                    />
-                  ) : field instanceof z.ZodNumber ? (
-                    <input
-                      id={key}
-                      name={key}
-                      type="number"
-                      placeholder={`Enter ${label.toLowerCase()}`}
-                      className="input input-secondary w-full "
-                    />
-                  ) : field instanceof z.ZodEnum ? (
-                    <select
-                      id={key}
-                      name={key}
-                      className="select select-secondary w-full"
-                    >
-                      <option disabled value="">
-                        Select {label}
-                      </option>
-                      {field.options &&
-                        field.options.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                    </select>
-                  ) : (
-                    <input
-                      id={key}
-                      name={key}
-                      type="text"
-                      disabled={true}
-                      placeholder={`Enter ${label.toLowerCase()}`}
-                      className="input input-secondary w-full "
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <div className="divider"></div>
-          <div className="modal-action">
-            <label htmlFor={`modal_New Event`} className="btn btn-secondary">
-              Cancel
-            </label>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={status === "pending"}
-            >
-              {status === "pending" ? "Creating..." : "Create"}
-            </button>
-          </div>
-        </form>
-      </Dialog>
+    <div>
+      <div className="flex flex-row items-center justify-between">
+        <Header>Events</Header>
+        <Dialog btnTitle="New Event" submitTitle="Create">
+          <NewEventForm />
+        </Dialog>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 mt-10 gap-5">
+        <Suspense fallback={<AllEventsFallback />}>
+          <AllEvents />
+        </Suspense>
+      </div>
     </div>
+  );
+}
+function AllEventsFallback() {
+  return (
+    <>
+      {Array.from({ length: 3 }).map((_: unknown, i: number) => (
+        <div
+          key={i}
+          className="p-4 bg-base-200 rounded-lg shadow-xl min-h-30 h-full animate-pulse"
+        ></div>
+      ))}
+    </>
   );
 }

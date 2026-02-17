@@ -11,6 +11,7 @@ import {
 
 export const approvedUsersRelations = relations(approvedUsers, ({ many }) => ({
   eventsCreated: many(events),
+  eventStatusReviewers: many(eventStatusReviewers),
   userDepartments: many(usersToDepartments),
 }));
 export const departmentRelations = relations(departments, ({ many }) => ({
@@ -33,6 +34,10 @@ export const eventStatusReviewersRelations = relations(
     currentHistory: one(eventStatusHistory, {
       fields: [eventStatusReviewers.statusHistoryId],
       references: [eventStatusHistory.id],
+    }),
+    reviewer: one(approvedUsers, {
+      fields: [eventStatusReviewers.reviewerId],
+      references: [approvedUsers.id],
     }),
   }),
 );

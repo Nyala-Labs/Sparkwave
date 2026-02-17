@@ -5,50 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771312344591,
-      "tag": "0000_wise_xorn",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1771318320296,
-      "tag": "0001_lush_silvermane",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771321858067,
-      "tag": "0002_sad_grandmaster",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1771323279212,
-      "tag": "0003_luxuriant_iceman",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771324764031,
-      "tag": "0004_melted_cassandra_nova",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1771324873912,
-      "tag": "0005_green_violations",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1771326455238,
-      "tag": "0006_brief_nicolaos",
+      "when": 1771339935706,
+      "tag": "0000_pale_tombstone",
       "breakpoints": true
     }
   ]

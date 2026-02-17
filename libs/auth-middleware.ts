@@ -12,7 +12,7 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_REDIRECT_URI,
 );
 
-export const authMiddleware = base.middleware(async ({ context, next }) => {
+export const authMiddleware = base.middleware(async ({ next }) => {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   const user = userData?.user;

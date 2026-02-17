@@ -9,7 +9,6 @@ import { google } from "googleapis";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import slugify from "slugify";
-import { uuidv4 } from "zod";
 const ROOT_FOLDER_ID = process.env.ROOT_FOLDER_DRIVE!;
 const TEMPLATE_DOC_ID = process.env.EVENT_PROPOSAL_TEMPLATE_ID!;
 export const CreateEventAction = os.events.new
@@ -22,8 +21,11 @@ export const CreateEventAction = os.events.new
       if (!ideationStatus) {
         throw new ORPCError("Ideation status not found");
       }
-      const slug =
-        slugify(title, { lower: true, strict: true }) + uuidv4().slugify();
+      const slug = slugify(title + "-" + new Date().getTime(), {
+        lower: true,
+        strict: true,
+      });
+
       const [newEvent] = await tx
         .insert(events)
         .values({

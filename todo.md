@@ -1,10 +1,8 @@
 1. Events flow
-- Able to create new action 
+<!-- - Able to create new action  -->
 - new resource
-- submit for approval.
-- able to see timeline for approvals. 
-- able to choose from list of approvals
-- status (draft, Published, Redo, Rejected)
+<!-- - submit for approval. -->
+<!-- - able to see timeline for approvals.  -->
+<!-- - able to choose from list of approvals -->
+<!-- - status (draft, Published, Redo, Rejected) -->
 
-series
-- should have /events/(123)/series

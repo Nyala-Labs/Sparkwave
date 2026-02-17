@@ -7,6 +7,7 @@ import {
   events,
   eventStatuses,
   eventStatusHistory,
+  eventStatusReviewers,
   eventStatusTransitions,
 } from "@/db/schema/events";
 import { onError, onSuccess, ORPCError } from "@orpc/client";
@@ -29,13 +30,21 @@ export const StateChangeAction = os.events.transition
       });
 
       if (!targetStatus) throw new ORPCError("Target status not found");
-
+      // delete all existing reviewers for event if found
+      await tx
+        .delete(eventStatusReviewers)
+        .where(eq(eventStatusReviewers.statusHistoryId, lastHistory?.id ?? 0));
       if (lastHistory?.decision === "rejected") {
         await tx
           .update(eventStatusHistory)
           .set({ decision: "submitted" })
           .where(eq(eventStatusHistory.id, lastHistory.id));
-
+        await tx.insert(eventStatusReviewers).values(
+          input.peopleApprovalList.map((person) => ({
+            statusHistoryId: lastHistory.id,
+            reviewerId: person.id,
+          })),
+        );
         return event;
       }
 
@@ -49,17 +58,28 @@ export const StateChangeAction = os.events.transition
 
         if (!transition) throw new ORPCError("No valid transition found");
 
-        await tx.insert(eventStatusHistory).values({
-          eventId: event.id,
-          changedById: context.user.id,
-          fromStatusId: event.currentStatusId,
-          toStatusId: transition.toStatusId,
-          decision: "submitted",
+        const [newHistory] = await tx
+          .insert(eventStatusHistory)
+          .values({
+            eventId: event.id,
+            changedById: context.user.id,
+            fromStatusId: event.currentStatusId,
+            toStatusId: transition.toStatusId,
+            decision: "submitted",
+          })
+          .returning();
+        await tx.insert(eventStatusReviewers).values(
+          input.peopleApprovalList.map((person) => ({
+            statusHistoryId: newHistory.id,
+            reviewerId: person.id,
+          })),
+        );
+        const ideationId = await tx.query.eventStatuses.findFirst({
+          where: ilike(eventStatuses.name, "ideation"),
         });
-
         await tx
           .update(events)
-          .set({ currentStatusId: transition.toStatusId })
+          .set({ currentStatusId: ideationId?.id ?? 0 })
           .where(eq(events.id, event.id));
 
         return event;
@@ -74,14 +94,23 @@ export const StateChangeAction = os.events.transition
 
       if (!transition) throw new ORPCError("Invalid status transition");
 
-      await tx.insert(eventStatusHistory).values({
-        eventId: event.id,
-        changedById: context.user.id,
-        fromStatusId: event.currentStatusId,
-        toStatusId: targetStatus.id,
-        decision: "submitted",
-      });
+      const [newHistory] = await tx
+        .insert(eventStatusHistory)
+        .values({
+          eventId: event.id,
+          changedById: context.user.id,
+          fromStatusId: event.currentStatusId,
+          toStatusId: targetStatus.id,
+          decision: "submitted",
+        })
+        .returning();
 
+      await tx.insert(eventStatusReviewers).values(
+        input.peopleApprovalList.map((person) => ({
+          statusHistoryId: newHistory.id,
+          reviewerId: person.id,
+        })),
+      );
       await tx
         .update(events)
         .set({ currentStatusId: targetStatus.id })
@@ -96,9 +125,7 @@ export const StateChangeAction = os.events.transition
   })
   .actionable({
     interceptors: [
-      onSuccess(async (output) =>
-        redirect(`/dashboard/events/${output.slug}/${output.route}`),
-      ),
+      onSuccess(async (output) => redirect(`/dashboard/events/${output.slug}`)),
       onError(async (error) => console.error(error)),
     ],
   });

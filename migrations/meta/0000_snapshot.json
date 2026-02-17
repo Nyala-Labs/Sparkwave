@@ -1,5 +1,5 @@
 {
-  "id": "84f2ba2c-f733-4fbe-8852-a2a936a8a5cd",
+  "id": "9451c23a-db09-44c4-9d80-278aa61e34fe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,8 +10,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "serial",
           "primaryKey": true,
+          "notNull": true
+        },
+        "supabase_id": {
+          "name": "supabase_id",
+          "type": "uuid",
+          "primaryKey": false,
           "notNull": true,
           "default": "gen_random_uuid()"
         },
@@ -27,6 +33,20 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "profile": {
+          "name": "profile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
         },
         "updated_at": {
           "name": "updated_at",
@@ -53,6 +73,13 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "approved_users_supabase_id_unique": {
+          "name": "approved_users_supabase_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "supabase_id"
+          ]
+        },
         "approved_users_email_unique": {
           "name": "approved_users_email_unique",
           "nullsNotDistinct": false,
@@ -83,7 +110,7 @@
         },
         "lead_id": {
           "name": "lead_id",
-          "type": "uuid",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -138,64 +165,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_departments": {
-      "name": "user_departments",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "department_id": {
-          "name": "department_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_departments_user_id_approved_users_id_fk": {
-          "name": "user_departments_user_id_approved_users_id_fk",
-          "tableFrom": "user_departments",
-          "tableTo": "approved_users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_departments_department_id_departments_id_fk": {
-          "name": "user_departments_department_id_departments_id_fk",
-          "tableFrom": "user_departments",
-          "tableTo": "departments",
-          "columnsFrom": [
-            "department_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.event_resources": {
       "name": "event_resources",
       "schema": "",
@@ -211,6 +180,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_by_default": {
+          "name": "created_by_default",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "event_id": {
           "name": "event_id",
@@ -291,6 +267,250 @@
           "columns": [
             "name",
             "event_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.event_status_history": {
+      "name": "event_status_history",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_status_id": {
+          "name": "from_status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "to_status_id": {
+          "name": "to_status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "changed_by_id": {
+          "name": "changed_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decision": {
+          "name": "decision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "event_status_history_event_id_events_id_fk": {
+          "name": "event_status_history_event_id_events_id_fk",
+          "tableFrom": "event_status_history",
+          "tableTo": "events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "event_status_history_from_status_id_event_statuses_id_fk": {
+          "name": "event_status_history_from_status_id_event_statuses_id_fk",
+          "tableFrom": "event_status_history",
+          "tableTo": "event_statuses",
+          "columnsFrom": [
+            "from_status_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_status_history_to_status_id_event_statuses_id_fk": {
+          "name": "event_status_history_to_status_id_event_statuses_id_fk",
+          "tableFrom": "event_status_history",
+          "tableTo": "event_statuses",
+          "columnsFrom": [
+            "to_status_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_status_history_changed_by_id_approved_users_id_fk": {
+          "name": "event_status_history_changed_by_id_approved_users_id_fk",
+          "tableFrom": "event_status_history",
+          "tableTo": "approved_users",
+          "columnsFrom": [
+            "changed_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.event_status_reviewers": {
+      "name": "event_status_reviewers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "status_history_id": {
+          "name": "status_history_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reviewer_id": {
+          "name": "reviewer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decision": {
+          "name": "decision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_status_reviewers_history": {
+          "name": "idx_status_reviewers_history",
+          "columns": [
+            {
+              "expression": "status_history_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "event_status_reviewers_status_history_id_event_status_history_id_fk": {
+          "name": "event_status_reviewers_status_history_id_event_status_history_id_fk",
+          "tableFrom": "event_status_reviewers",
+          "tableTo": "event_status_history",
+          "columnsFrom": [
+            "status_history_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "event_status_reviewers_reviewer_id_approved_users_id_fk": {
+          "name": "event_status_reviewers_reviewer_id_approved_users_id_fk",
+          "tableFrom": "event_status_reviewers",
+          "tableTo": "approved_users",
+          "columnsFrom": [
+            "reviewer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "event_status_reviewers_status_history_id_reviewer_id_unique": {
+          "name": "event_status_reviewers_status_history_id_reviewer_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "status_history_id",
+            "reviewer_id"
           ]
         }
       },
@@ -517,7 +737,7 @@
         },
         "created_by_id": {
           "name": "created_by_id",
-          "type": "uuid",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
@@ -577,6 +797,144 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.status_approval_departments": {
+      "name": "status_approval_departments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "status_approval_departments_status_id_event_statuses_id_fk": {
+          "name": "status_approval_departments_status_id_event_statuses_id_fk",
+          "tableFrom": "status_approval_departments",
+          "tableTo": "event_statuses",
+          "columnsFrom": [
+            "status_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "status_approval_departments_department_id_departments_id_fk": {
+          "name": "status_approval_departments_department_id_departments_id_fk",
+          "tableFrom": "status_approval_departments",
+          "tableTo": "departments",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users_to_departments": {
+      "name": "users_to_departments",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_to_departments_user_id_approved_users_id_fk": {
+          "name": "users_to_departments_user_id_approved_users_id_fk",
+          "tableFrom": "users_to_departments",
+          "tableTo": "approved_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "users_to_departments_department_id_departments_id_fk": {
+          "name": "users_to_departments_department_id_departments_id_fk",
+          "tableFrom": "users_to_departments",
+          "tableTo": "departments",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "users_to_departments_user_id_department_id_pk": {
+          "name": "users_to_departments_user_id_department_id_pk",
+          "columns": [
+            "user_id",
+            "department_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

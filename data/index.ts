@@ -1,8 +1,10 @@
+import { ApproveStateChangeAction } from "./actions/events/ApproveStateChangeAction";
 import { CreateEventAction } from "./actions/events/CreateEventAction";
 import { StateChangeAction } from "./actions/events/StateChangeAction";
 import { GetEvent } from "./callables/events/GetEvent";
 import { GetEvents } from "./callables/events/GetEvents";
 import { GetPeopleApprovalList } from "./callables/events/GetPeopleApprovalList";
+import { GetReviewersList } from "./callables/events/GetReviewersList";
 import { GetStatuses } from "./callables/events/GetStatuses";
 import { os } from "./os";
 
@@ -14,5 +16,7 @@ export const router = os.router({
     statuses: GetStatuses,
     getPeople: GetPeopleApprovalList,
     transition: StateChangeAction,
+    approve: ApproveStateChangeAction,
+    getReviewers: GetReviewersList,
   },
 });

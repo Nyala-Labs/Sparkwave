@@ -180,6 +180,7 @@ export const usersToDepartments = pgTable(
 );
 
 export const eventSchema = createSelectSchema(events);
+export const userSchema = createSelectSchema(approvedUsers);
 export const resourceSchema = createSelectSchema(eventResources);
 export const resourceInsertSchema = createSelectSchema(eventResources).omit({
   id: true,
@@ -189,3 +190,5 @@ export const resourceInsertSchema = createSelectSchema(eventResources).omit({
 });
 export const eventStatusSchema = createSelectSchema(eventStatuses);
 export const eventStatusHistorySchema = createSelectSchema(eventStatusHistory);
+export const eventStatusReviewersSchema =
+  createSelectSchema(eventStatusReviewers);

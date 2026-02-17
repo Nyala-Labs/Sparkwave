@@ -1,9 +1,11 @@
 import {
   eventSchema,
   eventStatusHistorySchema,
+  eventStatusReviewersSchema,
   eventStatusSchema,
   resourceSchema,
   statusTypeEnum,
+  userSchema,
 } from "@/db/schema/events";
 import {
   newEventOutputSchema,
@@ -47,5 +49,32 @@ export const transitionEventContract = oc
     z.object({
       slug: z.string(),
       route: z.enum(statusTypeEnum),
+    }),
+  );
+
+export const reviewerEventContract = oc
+  .input(
+    z.object({
+      statusHistoryId: z.number(),
+    }),
+  )
+  .output(
+    z.array(
+      eventStatusReviewersSchema.extend({
+        reviewer: userSchema,
+      }),
+    ),
+  );
+export const approveEventContract = oc
+  .input(
+    z.object({
+      statusHistoryId: z.number(),
+      note: z.string().optional(),
+      decision: z.enum(["approve", "reject"]),
+    }),
+  )
+  .output(
+    z.object({
+      slug: z.string(),
     }),
   );

@@ -109,7 +109,12 @@ const PeopleSearch = ({ people }: { people: SelectedPersonProps[] }) => {
           ))}
       </div>
       <div className="divider"></div>
-      <button className="btn btn-primary w-full">Get Approval</button>
+      <button
+        className="btn btn-primary w-full"
+        disabled={selectedPeople.length === 0 || status === "pending"}
+      >
+        {status === "pending" ? "Submitting..." : "Submit for Approval"}
+      </button>
     </form>
   );
 };

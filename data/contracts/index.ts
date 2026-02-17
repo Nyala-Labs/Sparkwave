@@ -1,9 +1,11 @@
 import {
+  approveEventContract,
   getAllPeopleApprovalListContract,
   getAllStatusesContract,
   getEventContract,
   getEventsContract,
   newEventContract,
+  reviewerEventContract,
   transitionEventContract,
 } from "./event";
 
@@ -15,5 +17,7 @@ export const routerContract = {
     statuses: getAllStatusesContract,
     getPeople: getAllPeopleApprovalListContract,
     transition: transitionEventContract,
+    approve: approveEventContract,
+    getReviewers: reviewerEventContract,
   },
 };
