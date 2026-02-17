@@ -4,7 +4,7 @@ import { RPCLink } from "@orpc/client/fetch";
 import { ContractRouterClient } from "@orpc/contract";
 
 const link = new RPCLink({
-  url: `${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/rpc`,
+  url: `${typeof window !== "undefined" ? window.location.origin : process.env.BASE_URL}/rpc`,
   headers: async () => {
     if (typeof window !== "undefined") {
       return {};
