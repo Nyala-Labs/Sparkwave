@@ -1,0 +1,1 @@
+ALTER TABLE "event_resources" ADD COLUMN "created_by_default" boolean DEFAULT false NOT NULL;
