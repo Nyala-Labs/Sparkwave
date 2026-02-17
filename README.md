@@ -425,6 +425,31 @@ Input: { eventId }
 - Only users in `approved_users` table can access authenticated routes
 - Check department membership for approval assignments
 
+### Troubleshooting: OAuth Redirects to localhost:3000
+
+If users are redirected back to `localhost:3000` after signing in on production:
+
+**Problem**: The `NEXT_PUBLIC_REDIRECT_URL` environment variable is hardcoded to localhost.
+
+**Solution**: The code now uses **dynamic host detection** (`window.location.origin`) which automatically adapts to your current domain:
+
+```typescript
+// In SignInBtn.tsx
+const getRedirectUrl = () => {
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/auth/callback`;
+  }
+  return process.env.NEXT_PUBLIC_REDIRECT_URL || "http://localhost:3000/auth/callback";
+};
+```
+
+**This means**:
+- ✅ Local development (`localhost:3000`) → redirects to `localhost:3000/auth/callback`
+- ✅ Production (`myapp.vercel.app`) → redirects to `myapp.vercel.app/auth/callback`
+- ✅ Custom domain (`events.company.com`) → redirects to `events.company.com/auth/callback`
+
+No environment variable needed! The app automatically detects where it's running.
+
 ---
 
 ## 🎨 Design & Styling
