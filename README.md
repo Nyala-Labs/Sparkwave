@@ -560,6 +560,32 @@ For issues, questions, or feedback:
 3. Set environment variables in Vercel dashboard
 4. Deploy automatically on push
 
+
+**Quick Fix:**
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings → Git → Build Cache**
+3. Click **Clear**
+4. Redeploy
+
+**Permanent Solution:**
+Add `vercel.json` to your project root:
+```json
+{
+  "buildCommand": "rm -rf .next && bun run build"
+}
+```
+
+Or set this environment variable in Vercel:
+```
+VERCEL_FORCE_NO_BUILD_CACHE=true
+```
+
+**Why this happens:**
+- Vercel caches `.next` and `node_modules` between deployments
+- When files are added/removed, the cache can become stale
+- Turbopack's module resolution uses cached paths that no longer match
+- Clearing the cache forces a fresh build with current file structure
+
 ### Docker (Alternative)
 
 ```bash

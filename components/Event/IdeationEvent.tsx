@@ -7,7 +7,7 @@ import PeopleSearch from "../PeopleSearch";
 import ResourceCard from "../ResourceCard";
 import { X } from "lucide-react";
 import { GetReviewersList } from "@/data/callables/events/GetReviewersList";
-import { createClient } from "@/libs/supabase/server";
+import { createClient } from "../../libs/supabase/server";
 import ApproveEventForm from "./ApproveEventForm";
 
 const IdeationEvent = async ({

@@ -1,6 +1,6 @@
 import { db } from "@/db/drizzle";
 import { approvedUsers } from "@/db/schema/approvedUsers";
-import { createClient } from "@/libs/supabase/server";
+import { createClient } from "../../../libs/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

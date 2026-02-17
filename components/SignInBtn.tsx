@@ -1,6 +1,5 @@
 "use client";
-import { createClient } from "@/libs/supabase/client";
-
+import { createClient } from "../libs/supabase/client";
 export const SignInBtn = () => {
   const signIn = async () => {
     await createClient().auth.signInWithOAuth({

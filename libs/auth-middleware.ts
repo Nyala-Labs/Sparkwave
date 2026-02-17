@@ -1,11 +1,11 @@
 import { base } from "@/data/base";
 import { approvedUsers } from "@/db/schema/approvedUsers";
-import { createClient } from "@/libs/supabase/server";
 import { ORPCError } from "@orpc/client";
 import { eq } from "drizzle-orm";
 import { google } from "googleapis";
 import { cookies } from "next/headers";
 import { db } from "../db/drizzle";
+import { createClient } from "./supabase/server";
 const oauth2Client = new google.auth.OAuth2(
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
