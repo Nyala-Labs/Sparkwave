@@ -7,7 +7,7 @@ const ApproveEventForm = ({ statusHistoryId }: { statusHistoryId: number }) => {
   const { execute, isPending } = useServerAction(ApproveStateChangeAction);
   const [comment, setComment] = useState("");
   return (
-    <div className="flex-1 flex flex-col justify-end mt-10">
+    <form className="flex-1 flex flex-col justify-end mt-10">
       <div className="flex flex-row gap-px">
         <span className="rounded-full size-2.5 bg-red-400 animate-pulse"></span>
         <h3 className="text-xl font-bold">Approval</h3>
@@ -31,7 +31,7 @@ const ApproveEventForm = ({ statusHistoryId }: { statusHistoryId: number }) => {
               })
             }
           >
-            {isPending ? "Rejecting..." : "Reject"}
+            Reject
           </button>
           <button
             disabled={isPending}
@@ -44,11 +44,11 @@ const ApproveEventForm = ({ statusHistoryId }: { statusHistoryId: number }) => {
               })
             }
           >
-            {isPending ? "Processing..." : "Approve"}
+            Approve
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

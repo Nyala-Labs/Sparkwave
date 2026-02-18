@@ -91,7 +91,6 @@ export const StateChangeAction = os.events.transition
           eq(eventStatusTransitions.toStatusId, targetStatus.id),
         ),
       });
-
       if (!transition) throw new ORPCError("Invalid status transition");
 
       const [newHistory] = await tx
@@ -111,10 +110,6 @@ export const StateChangeAction = os.events.transition
           reviewerId: person.id,
         })),
       );
-      await tx
-        .update(events)
-        .set({ currentStatusId: targetStatus.id })
-        .where(eq(events.id, event.id));
 
       return event;
     });

@@ -14,82 +14,84 @@ export default async function SingleEvent({
 
   const event = await GetEvent({ slug });
   const statuses = await GetStatuses();
+
   if (!event) redirect("/dashboard/events");
+
+  const sortedStatuses = [...statuses].sort(
+    (a, b) => a.orderIndex - b.orderIndex,
+  );
+
+  const currentStatus = sortedStatuses.find(
+    (s) => s.id === event.currentStatusId,
+  );
+  console.log("Dwd", sortedStatuses, currentStatus);
   return (
     <div>
       <Header>{event.title}</Header>
-      <div className="flex flex-col items-center my-10  w-full">
-        <ul className="timeline  justify-center">
-          {statuses
-            .sort((a, b) => a.orderIndex - b.orderIndex)
-            .map((status, index) => {
-              const currentStatus = statuses.find(
-                (s) => s.id === event.currentStatusId,
-              );
 
-              const isCompleted =
-                status.orderIndex < (currentStatus?.orderIndex ?? 0);
+      <div className="flex flex-col items-center my-10 w-full">
+        <ul className="timeline justify-center">
+          {sortedStatuses.map((status, index) => {
+            const isCompleted =
+              currentStatus && status.orderIndex < currentStatus.orderIndex;
 
-              const isCurrent = status.id === event.currentStatusId;
+            const isCurrent = status.id === event.currentStatusId;
 
-              const isLast = index === statuses.length - 1;
+            const isLast = index === sortedStatuses.length - 1;
 
-              return (
-                <li key={status.id} className="max-w-40 w-full">
-                  {index !== 0 && (
-                    <hr
+            return (
+              <li key={status.id} className="max-w-40 w-full">
+                {index !== 0 && (
+                  <hr
+                    className={cn(
+                      "w-full",
+                      isCompleted || isCurrent ? "bg-primary" : "bg-secondary",
+                    )}
+                  />
+                )}
+
+                <div className="timeline-start timeline-box">
+                  <div className="flex flex-col">
+                    <span
                       className={cn(
-                        "w-full",
-                        index === 1 || isCompleted || isCurrent
-                          ? "bg-primary"
-                          : "bg-secondary",
+                        "font-semibold text-lg",
+                        isCurrent && "text-primary",
                       )}
-                    />
-                  )}
-
-                  <div className="timeline-start timeline-box">
-                    <div className="flex flex-col">
-                      <span
-                        className={`font-semibold text-lg ${
-                          isCurrent ? "text-primary" : ""
-                        }`}
-                      >
-                        {status.name}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="timeline-middle">
-                    <div
-                      className={`flex items-center justify-center h-6 w-6 rounded-full border
-                ${
-                  isCompleted
-                    ? "bg-primary border-primary text-primary-content "
-                    : isCurrent
-                      ? "border-primary animate-pulse"
-                      : "bg-base-200 border-base-300"
-                }`}
                     >
-                      {isCompleted && <Check size={14} />}
-                      {isCurrent && !isCompleted && (
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      )}
-                    </div>
+                      {status.name}
+                    </span>
                   </div>
+                </div>
 
-                  {!isLast && (
-                    <hr
-                      className={cn(
-                        "w-full",
-                        isCompleted || isCurrent
-                          ? "bg-primary"
-                          : "bg-secondary",
-                      )}
-                    />
-                  )}
-                </li>
-              );
-            })}
+                <div className="timeline-middle">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center h-6 w-6 rounded-full border",
+                      isCompleted
+                        ? "bg-primary border-primary text-primary-content"
+                        : isCurrent
+                          ? "border-primary animate-pulse"
+                          : "bg-base-200 border-base-300",
+                    )}
+                  >
+                    {isCompleted && <Check size={14} />}
+                    {isCurrent && !isCompleted && (
+                      <div className="h-2 w-2 rounded-full bg-primary" />
+                    )}
+                  </div>
+                </div>
+
+                {!isLast && (
+                  <hr
+                    className={cn(
+                      "w-full",
+                      isCompleted || isCurrent ? "bg-primary" : "bg-secondary",
+                    )}
+                  />
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
 

@@ -46,6 +46,7 @@ export const ApproveStateChangeAction = os.events.approve
         .update(eventStatusHistory)
         .set({
           decision: decisionValue,
+          note,
         })
         .where(eq(eventStatusHistory.id, statusHistoryId))
         .returning();

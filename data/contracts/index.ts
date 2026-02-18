@@ -1,5 +1,6 @@
 import {
   approveEventContract,
+  createNewGithubRepoContract,
   getAllPeopleApprovalListContract,
   getAllStatusesContract,
   getEventContract,
@@ -19,5 +20,6 @@ export const routerContract = {
     transition: transitionEventContract,
     approve: approveEventContract,
     getReviewers: reviewerEventContract,
+    createGithubRepo: createNewGithubRepoContract,
   },
 };

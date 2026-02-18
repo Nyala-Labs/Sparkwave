@@ -1,0 +1,2 @@
+ALTER TABLE "event_resources" DROP CONSTRAINT "event_resources_name_event_id_unique";--> statement-breakpoint
+ALTER TABLE "event_resources" ADD CONSTRAINT "event_resources_name_event_id_type_unique" UNIQUE("name","event_id","type");

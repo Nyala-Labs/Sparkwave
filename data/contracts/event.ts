@@ -10,6 +10,7 @@ import {
 import {
   newEventOutputSchema,
   newEventSchema,
+  newRepoSchema,
   peopleApprovalListSchema,
 } from "@/libs/schema/event.schema";
 import { oc } from "@orpc/contract";
@@ -78,3 +79,8 @@ export const approveEventContract = oc
       slug: z.string(),
     }),
   );
+export const createNewGithubRepoContract = oc.input(newRepoSchema).output(
+  z.object({
+    slug: z.string(),
+  }),
+);

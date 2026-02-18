@@ -34,6 +34,27 @@ export const authMiddleware = base.middleware(async ({ next }) => {
     access_token: session.accessToken,
     refresh_token: session.refreshToken,
   });
+
+  const { token } = await oauth2Client.getAccessToken();
+
+  if (token && token !== session.accessToken) {
+    const cookieStore = await cookies();
+    cookieStore.set(
+      "sessionData",
+      JSON.stringify({
+        accessToken: token,
+        refreshToken: session.refreshToken,
+      }),
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 3,
+      },
+    );
+  }
+
   const approvedUser = await db.query.approvedUsers.findFirst({
     where: eq(approvedUsers.supabaseId, user.id),
   });

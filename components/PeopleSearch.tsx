@@ -1,5 +1,6 @@
 "use client";
 import { StateChangeAction } from "@/data/actions/events/StateChangeAction";
+import { StatusTypeEnum } from "@/db/schema/event.types";
 import { peopleApprovalListSchema } from "@/libs/schema/event.schema";
 import { useServerAction } from "@orpc/react/hooks";
 import { X } from "lucide-react";
@@ -14,7 +15,13 @@ type SelectedPersonProps = {
   profile: string;
 };
 
-const PeopleSearch = ({ people }: { people: SelectedPersonProps[] }) => {
+const PeopleSearch = ({
+  people,
+  stage,
+}: {
+  people: SelectedPersonProps[];
+  stage: StatusTypeEnum;
+}) => {
   const [selectedPeople, setSelectedPeople] = useState<SelectedPersonProps[]>(
     [],
   );
@@ -32,7 +39,7 @@ const PeopleSearch = ({ people }: { people: SelectedPersonProps[] }) => {
     const parsed = peopleApprovalListSchema.safeParse(selectedPeople);
     if (parsed.success) {
       execute({
-        stage: "ideation",
+        stage: stage,
         peopleApprovalList: parsed.data,
         slug: pathName.split("/")[3],
       });

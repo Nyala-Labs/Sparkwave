@@ -2,13 +2,13 @@ import { GetEvent } from "@/data/callables/events/GetEvent";
 import { GetPeopleApprovalList } from "@/data/callables/events/GetPeopleApprovalList";
 import { GetStatuses } from "@/data/callables/events/GetStatuses";
 import { redirect } from "next/navigation";
-import Header from "../Header";
-import PeopleSearch from "../PeopleSearch";
-import ResourceCard from "../ResourceCard";
 import { X } from "lucide-react";
 import { GetReviewersList } from "@/data/callables/events/GetReviewersList";
-import { createClient } from "../../libs/supabase/server";
-import ApproveEventForm from "./ApproveEventForm";
+import { createClient } from "@/libs/supabase/server";
+import Header from "@/components/Header";
+import PeopleSearch from "@/components/PeopleSearch";
+import ResourceCard from "@/components/ResourceCard";
+import ApproveEventForm from "../ApproveEventForm";
 
 const IdeationEvent = async ({
   params,
@@ -16,11 +16,14 @@ const IdeationEvent = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-
+  const statusIdeation = (await GetStatuses()).find(
+    (s) => s.name.toLowerCase() === "ideation",
+  );
+  if (!statusIdeation) redirect("/dashboard/events");
   const [event, _, peopleApprovalList] = await Promise.all([
     GetEvent({ slug, resourceCreatedByDefault: false }),
     GetStatuses(),
-    GetPeopleApprovalList({ statusId: 2 }),
+    GetPeopleApprovalList({ statusId: statusIdeation?.id }),
   ]);
 
   if (!event) redirect("/dashboard/events");
@@ -67,6 +70,9 @@ const IdeationEvent = async ({
 
           <div className={`badge badge-soft ${badge.className} px-3 py-px`}>
             {badge.text}
+            {latestStatus?.decision !== "submitted" && latestStatus?.note && (
+              <span>- {latestStatus.note}</span>
+            )}
           </div>
         </div>
 
@@ -90,7 +96,7 @@ const IdeationEvent = async ({
                 </div>
 
                 <div className="mt-5">
-                  <PeopleSearch people={peopleApprovalList} />
+                  <PeopleSearch stage="ideation" people={peopleApprovalList} />
                 </div>
               </div>
             </div>

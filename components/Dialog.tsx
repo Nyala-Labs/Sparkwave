@@ -1,29 +1,38 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 type DialogProps = {
   btnTitle: string;
   children: ReactNode;
   submitTitle: string;
 };
-const Dialog = (props: DialogProps) => {
+
+const Dialog = ({ btnTitle, children }: DialogProps) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <>
-      <label htmlFor={`modal_${props.btnTitle}`} className="btn">
-        {props.btnTitle}
-      </label>
+      <button className="btn" onClick={() => setOpen(true)}>
+        {btnTitle}
+      </button>
 
-      <input
-        type="checkbox"
-        id={`modal_${props.btnTitle}`}
-        className="modal-toggle"
-      />
-      <div className="modal" role="dialog">
-        <div className="modal-box">
-          <div>{props.children}</div>
+      {open && (
+        <div className="modal modal-open" role="dialog">
+          <div className="modal-box relative">
+            <button
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+              onClick={() => setOpen(false)}
+            >
+              ✕
+            </button>
+
+            {children}
+          </div>
+
+          <div className="modal-backdrop" onClick={() => setOpen(false)} />
         </div>
-      </div>
+      )}
     </>
   );
 };

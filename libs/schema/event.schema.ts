@@ -20,3 +20,8 @@ export const peopleApprovalListSchema = z.array(
   }),
 );
 // export const
+export const newRepoSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().max(500),
+  eventSlug: z.string(),
+});

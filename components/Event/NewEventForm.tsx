@@ -2,10 +2,12 @@
 import { CreateEventAction } from "@/data/actions/events/CreateEventAction";
 import { newEventSchema } from "@/libs/schema/event.schema";
 import { useServerAction } from "@orpc/react/hooks";
+import { useRouter } from "next/navigation";
 import z from "zod";
 
 const NewEventForm = () => {
   const { execute, status } = useServerAction(CreateEventAction);
+  const router = useRouter();
   const action = async (form: FormData) => {
     const input = Object.fromEntries(form.entries());
     const parsed = newEventSchema.safeParse(input);
@@ -14,6 +16,9 @@ const NewEventForm = () => {
       return;
     }
     execute(parsed.data);
+    if (status === "success") {
+      router.push(`/dashboard/events/${parsed.data.slug}`);
+    }
   };
   return (
     <form
@@ -29,6 +34,8 @@ const NewEventForm = () => {
 
       <div className="space-y-4">
         {Object.entries(newEventSchema.shape).map(([key, field]) => {
+          if (key === "slug") return null;
+
           const label = key.charAt(0).toUpperCase() + key.slice(1);
 
           return (
@@ -45,7 +52,7 @@ const NewEventForm = () => {
                   name={key}
                   type="text"
                   placeholder={`Enter ${label.toLowerCase()}`}
-                  className="input input-secondary w-full "
+                  className="input input-secondary w-full"
                 />
               ) : field instanceof z.ZodNumber ? (
                 <input
@@ -53,7 +60,7 @@ const NewEventForm = () => {
                   name={key}
                   type="number"
                   placeholder={`Enter ${label.toLowerCase()}`}
-                  className="input input-secondary w-full "
+                  className="input input-secondary w-full"
                 />
               ) : field instanceof z.ZodEnum ? (
                 <select
@@ -61,24 +68,23 @@ const NewEventForm = () => {
                   name={key}
                   className="select select-secondary w-full"
                 >
-                  <option disabled value="">
+                  <option disabled value="" className="option">
                     Select {label}
                   </option>
-                  {field.options &&
-                    field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                  {field.options?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
                 </select>
               ) : (
                 <input
                   id={key}
                   name={key}
                   type="text"
-                  disabled={true}
+                  disabled
                   placeholder={`Enter ${label.toLowerCase()}`}
-                  className="input input-secondary w-full "
+                  className="input input-secondary w-full"
                 />
               )}
             </div>

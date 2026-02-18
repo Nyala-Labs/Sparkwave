@@ -48,6 +48,7 @@ export const eventStatuses = pgTable("event_statuses", {
 export const resourceTypeEnum = [
   "docs",
   "sheet",
+  "github",
   "slides",
   "others",
   "folder",
@@ -75,7 +76,7 @@ export const eventResources = pgTable(
     ...timestamps,
   },
   (t) => [
-    unique().on(t.name, t.eventId),
+    unique().on(t.name, t.eventId, t.type),
     index("idx_event_resources_event").on(t.eventId),
   ],
 );

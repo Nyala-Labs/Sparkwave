@@ -1,5 +1,6 @@
 import { ApproveStateChangeAction } from "./actions/events/ApproveStateChangeAction";
 import { CreateEventAction } from "./actions/events/CreateEventAction";
+import { CreateGithubRepoAction } from "./actions/events/CreateGithubRepoAction";
 import { StateChangeAction } from "./actions/events/StateChangeAction";
 import { GetEvent } from "./callables/events/GetEvent";
 import { GetEvents } from "./callables/events/GetEvents";
@@ -18,5 +19,6 @@ export const router = os.router({
     transition: StateChangeAction,
     approve: ApproveStateChangeAction,
     getReviewers: GetReviewersList,
+    createGithubRepo: CreateGithubRepoAction,
   },
 });
